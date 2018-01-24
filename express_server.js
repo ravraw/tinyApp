@@ -23,15 +23,21 @@ app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+app.get("/urls/:id", (req, res) => {
+  let templateVars = { shortURL: req.params.id };
+  if(urlDatabase.hasOwnProperty(req.params.id)){
+    templateVars.fullUrl = urlDatabase[req.params.id];
+  }else templateVars.fullUrl = "Url not in database."
+  res.render("urls_show", templateVars);
+  //console.log(urls_show);
+  //console.log(req.params.id);
+});
+
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id };
-  res.render("urls_show", templateVars);
-  console.log(templateVars);
-});
+
 
 app.listen(PORT,()=>{
 
