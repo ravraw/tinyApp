@@ -15,16 +15,18 @@ var urlDatabase = {
 }
 
 function generateRandomString() {
- var  randomId = '';
+  var randomId = '' ;
+ //var  randomId = Math.random().toString(36).substring(2,5) + Math.random().toString(36).substring(2,5);;
  while(randomId.length < 6){
   randomId += Math.floor(Math.random()*9);
   randomId += String.fromCharCode(Math.floor(Math.random() * (122 - 97) ) + 97);
   }
   randomId.toString();
   console.log(randomId);
+  return randomId ;
 }
 
-generateRandomString();
+//generateRandomString();
 
 app.get('/', (req,res)=>{
   res.end('hello!!');
@@ -43,16 +45,36 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  var shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  //console.log(shortURL);
+  //console.log(req.body);  // debug statement to see POST parameters
+  //res.send("Ok");
+  //console.log(shortURl);
+  res.redirect(`/u/${shortURL}`);
+  console.log(urlDatabase);        // Respond with 'Ok' (we will replace this)
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  console.log('working');
+  var shortURL = req.params.shortURL;
+  console.log(shortURL);
+  var longURL = urlDatabase[shortURL];
+  res.redirect(urlDatabase[shortURL]);
+});
+
+
 app.get("/urls/:id", (req, res) => {
+  console.log('/urls/:id');
+
   let templateVars = { shortURL: req.params.id };
   if(urlDatabase.hasOwnProperty(req.params.id)){
     templateVars.fullUrl = urlDatabase[req.params.id];
-  }else {templateVars.fullUrl = "Url not found."
-  res.render("urls_show", templateVars);}
+  }
+  else {
+    templateVars.fullUrl = "Url not found."
+  }
+  res.render("urls_show", templateVars);
   //console.log(urls_show);
   //console.log(req.params.id);
 });
