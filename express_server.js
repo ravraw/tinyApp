@@ -17,6 +17,8 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 }
 
+
+
 function generateRandomString() {
   var randomId = '' ;
  //var  randomId = Math.random().toString(36).substring(2,5) + Math.random().toString(36).substring(2,5);;
@@ -49,7 +51,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {
+  urls: urlDatabase,
+  username:req.cookies.username,
+};
+  res.render("urls_new",templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -75,7 +81,8 @@ app.get("/urls/:id", (req, res) => {
 
   let templateVars = {
     shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id],
+    username:req.cookies.username,
   };
 
   res.render("urls_show", templateVars);
@@ -87,8 +94,6 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     username:req.cookies.username,
   };
-
-
   res.render("urls_index", templateVars);
 });
 
@@ -97,7 +102,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   var shortURL = req.params.shortURL;
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
-
 });
 
 app.post("/urls/:shortURL/update", (req, res) => {
@@ -108,14 +112,23 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 });
 
+app.post("/logout", (req, res) => {
+ res.clearCookie('username');
+ //console.log(req.body);
+
+ res.redirect("/urls");
+});
+
 app.post("/login", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    //username:req.cookies.username,
+  };
  res.cookie("username", req.body.username);
  //console.log(req.body.username);
 
  res.redirect("/urls");
 });
-
-
 
 app.listen(PORT,()=>{
 
