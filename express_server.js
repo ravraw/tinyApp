@@ -1,6 +1,9 @@
 var express = require('express');
+var cookieParser = require('cookie-parser')
 
-var app = express();
+var app = express()
+app.use(cookieParser())
+
 
 app.set("view engine", "ejs");
 
@@ -52,12 +55,9 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls", (req, res) => {
   var shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  //console.log(shortURL);
-  //console.log(req.body);  // debug statement to see POST parameters
-  //res.send("Ok");
-  //console.log(shortURl);
+
   res.redirect(`/u/${shortURL}`);
-  console.log(urlDatabase);        // Respond with 'Ok' (we will replace this)
+  console.log(urlDatabase);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -77,64 +77,44 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id]
   };
-  // if(urlDatabase.hasOwnProperty(req.params.id)){
-  //   templateVars.fullUrl = urlDatabase[req.params.id];
-  // }
-  // else {
-  //   templateVars.fullUrl = "Url not found."
-  // }
+
   res.render("urls_show", templateVars);
-  //console.log(urls_show);
-  //console.log(req.params.id);
+
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = {
+    urls: urlDatabase,
+    username:req.cookies.username,
+  };
+
+
   res.render("urls_index", templateVars);
 });
 
-
-// app.get("/urls/new", (req, res) => {
-//   res.render("urls_new");
-// });
-
-// app.post("/urls", (req, res) => {
-//   console.log(req.body);  // debug statement to see POST parameters
-//   res.send("Ok");         // Respond with 'Ok' (we will replace this)
-// });
 app.post("/urls/:shortURL/delete", (req, res) => {
-  //console.log(req.params.shortURL);
+
   var shortURL = req.params.shortURL;
-  //console.log(urlDatabase[shortURL]);
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 
 });
 
-// app.post("/urls/:shortURL/edit", (req, res) => {
-//   let templateVars = { urls: urlDatabase }
-//   //console.log(templateVars);
-//   var x = templateVars.urls[req.params.shortURL];
-//   //console.log(req.params.shortURL);
-//   var shortURL = req.params.shortURL;
-//   //console.log(urlDatabase[shortURL]);
-//  // delete urlDatabase[req.params.shortURL];
-//   res.render("urls_show",templateVars);
-
-// });
-
 app.post("/urls/:shortURL/update", (req, res) => {
-  // let templateVars = { urls: urlDatabase }
-  // console.log(templateVars);
-  // var x = templateVars.urls[req.params.shortURL];
+
   urlDatabase[req.params.shortURL] = req.body.updatedURL;
-  // console.log(req.params.shortURL);
-  // var shortURL = req.params.shortURL;
-  // console.log(urlDatabase[shortURL]);
- // delete urlDatabase[req.params.shortURL];
+
   res.redirect("/urls");
 
 });
+
+app.post("/login", (req, res) => {
+ res.cookie("username", req.body.username);
+ //console.log(req.body.username);
+
+ res.redirect("/urls");
+});
+
 
 
 app.listen(PORT,()=>{
