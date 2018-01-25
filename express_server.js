@@ -61,6 +61,7 @@ app.get("/u/:shortURL", (req, res) => {
   console.log(shortURL);
   var longURL = urlDatabase[shortURL];
   res.redirect(urlDatabase[shortURL]);
+  res.status(301).send({ error: 'temporary redirect"' });
 });
 
 
@@ -92,7 +93,14 @@ app.get("/urls", (req, res) => {
 //   console.log(req.body);  // debug statement to see POST parameters
 //   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 // });
+app.post("/urls/:shortURL/delete", (req, res) => {
+  console.log(req.params.shortURL);
+  var shortURL = req.params.shortURL;
+  console.log(urlDatabase[shortURL]);
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
 
+});
 
 app.listen(PORT,()=>{
 

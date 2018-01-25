@@ -7,9 +7,16 @@
   <% include ./partials/_header %>
   <uL>
    <% for(url in urls){ %>
-        <li><%= urls[url] %>-- <%= url %> </li>
+        <li><%= urls[url] %> - <%= url %> </li>
+        <form id = "<%= url %>" method="POST" action = "/urls/<%= url %>/delete">
+          <button type="submit" value = "delete" > Delete </button>
+
+        </form>
+
     <% }; %>
-    <li><a href = #> Link </a></li>
+    <li><a href = 'urls_new.ejs'> Link </a></li>
   </uL>  <!-- Add your EJS code here -->
+
 </body>
 </html>
+
