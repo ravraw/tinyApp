@@ -26,6 +26,11 @@ function generateRandomString() {
   return randomId ;
 }
 
+// document.getElementsByTagName('a').onClick((event)=>{
+// console.log(event.target.innerHTML);
+
+// })
+
 //generateRandomString();
 
 app.get('/', (req,res)=>{
@@ -68,13 +73,16 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   console.log('/urls/:id');
 
-  let templateVars = { shortURL: req.params.id };
-  if(urlDatabase.hasOwnProperty(req.params.id)){
-    templateVars.fullUrl = urlDatabase[req.params.id];
-  }
-  else {
-    templateVars.fullUrl = "Url not found."
-  }
+  let templateVars = {
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id]
+  };
+  // if(urlDatabase.hasOwnProperty(req.params.id)){
+  //   templateVars.fullUrl = urlDatabase[req.params.id];
+  // }
+  // else {
+  //   templateVars.fullUrl = "Url not found."
+  // }
   res.render("urls_show", templateVars);
   //console.log(urls_show);
   //console.log(req.params.id);
@@ -85,6 +93,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+
 // app.get("/urls/new", (req, res) => {
 //   res.render("urls_new");
 // });
@@ -94,13 +103,39 @@ app.get("/urls", (req, res) => {
 //   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 // });
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log(req.params.shortURL);
+  //console.log(req.params.shortURL);
   var shortURL = req.params.shortURL;
-  console.log(urlDatabase[shortURL]);
+  //console.log(urlDatabase[shortURL]);
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 
 });
+
+// app.post("/urls/:shortURL/edit", (req, res) => {
+//   let templateVars = { urls: urlDatabase }
+//   //console.log(templateVars);
+//   var x = templateVars.urls[req.params.shortURL];
+//   //console.log(req.params.shortURL);
+//   var shortURL = req.params.shortURL;
+//   //console.log(urlDatabase[shortURL]);
+//  // delete urlDatabase[req.params.shortURL];
+//   res.render("urls_show",templateVars);
+
+// });
+
+app.post("/urls/:shortURL/update", (req, res) => {
+  // let templateVars = { urls: urlDatabase }
+  // console.log(templateVars);
+  // var x = templateVars.urls[req.params.shortURL];
+  urlDatabase[req.params.shortURL] = req.body.updatedURL;
+  // console.log(req.params.shortURL);
+  // var shortURL = req.params.shortURL;
+  // console.log(urlDatabase[shortURL]);
+ // delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+
+});
+
 
 app.listen(PORT,()=>{
 

@@ -6,13 +6,14 @@
 <body>
   <% include ./partials/_header %>
   <uL>
-   <% for(url in urls){ %>
+   <% for(let url in urls){ %>
         <li><%= urls[url] %> - <%= url %> </li>
-        <form id = "<%= url %>" method="POST" action = "/urls/<%= url %>/delete">
-          <button type="submit" value = "delete" > Delete </button>
-
+        <form method="POST" action = "/urls/<%= url %>/delete">
+          <input type="submit" value = "delete">
         </form>
-
+        <form  method="GET" action = "/urls/<%= url %>">
+           <input type="submit" value = "edit">
+        </form>
     <% }; %>
     <li><a href = 'urls_new.ejs'> Link </a></li>
   </uL>  <!-- Add your EJS code here -->

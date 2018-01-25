@@ -5,8 +5,12 @@
 </head>
 <body>
    <% include ./partials/_header %>
-  <uL>
-      <li><%= fullUrl %>-- <%= shortURL %></li>
-  </uL>  <!-- Add your EJS code here -->
+
+    <form method="POST" action = "/urls/<%= shortURL %>/update">
+      <label>ShortURL:<%= shortURL %></label><br>
+      <input type = "text" name="updatedURL" placeholder = "Enter new domain name">
+      <input type="submit" value = "submit">
+      </form>
+
 </body>
-</html>
+</html
