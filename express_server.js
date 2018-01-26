@@ -51,6 +51,15 @@ function generateRandomString() {
 
 //generateRandomString();
 
+// -------LOGIN PAGES--------------///
+
+app.get("/login", (req, res) => {
+
+  res.render("login");
+});
+
+//-------------------------------------//
+
 app.get('/', (req,res)=>{
   res.end('hello!!');
 
@@ -65,7 +74,7 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   let templateVars = {
-  urls: urlDatabase,
+  users: users,
   username:req.cookies.username,
 };
   res.render("urls_new",templateVars);
@@ -96,7 +105,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username:req.cookies.username,
+    users: users,
   };
 
   res.render("urls_show", templateVars);
@@ -108,35 +117,33 @@ app.get("/register", (req, res) => {
   res.render("urls_register");
 });
 
+
+// page to register new users
+
 app.post("/register", (req, res) => {
-   let randomId = generateRandomString();
-   if(req.body.email == false || req.body.password == false ){
+  let randomId = generateRandomString();
+  if(req.body.email == false || req.body.password == false ){
     res.status(400).send("Error: Enter a valid Email and Password")
-   }
-   for(let user in users){
-      if (user['email'] === `${req.body.email}`){   // not working
-          res.status(400).send("Error: Email id already taken");
-      }
+  }
+  for(let user in users){
+    if (user['email'] === `${req.body.email}`){   // not working
+      res.status(400).send("Error: Email id already taken");
+    }
+  }
+
+  users[randomId]={
+    id: `${randomId}`,
+    email: `${req.body.email}`.toString(),
+    password: `${req.body.password}`.toString(),
     }
 
-
-   users[randomId]={
-      id: `${randomId}`,
-      email: `${req.body.email}`.toString(),
-      password: `${req.body.password}`.toString(),
-    }
-    //res.cookie("username", req.body.username);
-    console.log(users);
-
-    res.cookie("user_id",`${randomId}`);
-    res.render("urls_register");
-    //console.log(res.cookie.${randomId});
-
+  res.cookie("user_id",`${randomId}`);
+  res.render("urls_register");
 });
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
+    users: users,
     username:req.cookies.username,
   };
   res.render("urls_index", templateVars);
@@ -148,6 +155,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
+
 
 app.post("/urls/:shortURL/update", (req, res) => {
 
@@ -164,16 +172,17 @@ app.post("/logout", (req, res) => {
  res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase,
-    //username:req.cookies.username,
-  };
- res.cookie("username", req.body.username);
- //console.log(req.body.username);
 
- res.redirect("/urls");
-});
+
+
+
+
+
+
+
+
+
+
 
 app.listen(PORT,()=>{
 

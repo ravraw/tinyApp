@@ -1,22 +1,18 @@
 <header>
-<h1>HEADER</h1>
+  <h1>HEADER</h1>
 
-
-<%if(!username){%>
-<form method="POST" action = "/login">
-  <h2><%=username%></h2>
- <input type="text" name = "username" >
- <input type = "submit" value ="Sign-in">
-</form>
-<% }%>
-<% if(username){%>
-  <form method="POST" action = "/logout">
-  <h2><%=username%></h2>
- <input type = "submit" value ="log-out">
-</form>
-
-<% }%>
-
-
+  <!-- <%if(!username){%>
+    <form method="POST" action = "/login">
+      <h2><%=username%></h2>
+      <input type="text" name = "username" >
+      <input type = "submit" value ="Sign-in">
+    </form>
+  <% }%>
+  <% if(username){%>
+    <form method="POST" action = "/logout">
+        <h2><%=username%></h2>
+        <input type = "submit" value ="log-out">
+    </form>
+  <%}%> -->
 </header>
 
