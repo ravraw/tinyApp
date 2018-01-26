@@ -109,19 +109,28 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
- let randomId = generateRandomString();
- //let newUser = `${user}-${randomId}`;
- users[randomId]={
-    id: `${randomId}`,
-    email: `${req.body.email}`.toString(),
-    password: `${req.body.password}`.toString(),
-  }
-  //res.cookie("username", req.body.username);
-  console.log(users);
+   let randomId = generateRandomString();
+   if(req.body.email == false || req.body.password == false ){
+    res.status(400).send("Error: Enter a valid Email and Password")
+   }
+   for(let user in users){
+      if (user['email'] === `${req.body.email}`){   // not working
+          res.status(400).send("Error: Email id already taken");
+      }
+    }
 
-  res.cookie("user_id",`${randomId}`);
-  res.render("urls_register");
-  //console.log(res.cookie.${randomId});
+
+   users[randomId]={
+      id: `${randomId}`,
+      email: `${req.body.email}`.toString(),
+      password: `${req.body.password}`.toString(),
+    }
+    //res.cookie("username", req.body.username);
+    console.log(users);
+
+    res.cookie("user_id",`${randomId}`);
+    res.render("urls_register");
+    //console.log(res.cookie.${randomId});
 
 });
 
@@ -170,5 +179,5 @@ app.listen(PORT,()=>{
 
   console.log(`Example app listening on port ${PORT}!`);
 
-})
+});
 
