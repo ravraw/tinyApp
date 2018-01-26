@@ -59,10 +59,10 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+console.log(req.body);
 
 
-
-  res.render("login");
+  //res.render("login");
 });
 
 
