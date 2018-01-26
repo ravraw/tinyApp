@@ -116,8 +116,13 @@ app.post("/register", (req, res) => {
     email: `${req.body.email}`.toString(),
     password: `${req.body.password}`.toString(),
   }
+  //res.cookie("username", req.body.username);
   console.log(users);
+
+  res.cookie("user_id",`${randomId}`);
   res.render("urls_register");
+  //console.log(res.cookie.${randomId});
+
 });
 
 app.get("/urls", (req, res) => {
