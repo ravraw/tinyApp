@@ -69,6 +69,7 @@ app.get("/urls/new", (req, res) => {
   username:req.cookies.username,
 };
   res.render("urls_new",templateVars);
+  console.log(user);
 });
 
 app.post("/urls", (req, res) => {
@@ -90,7 +91,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 app.get("/urls/:id", (req, res) => {
-  console.log('/urls/:id');
+  //console.log('/urls/:id');
 
   let templateVars = {
     shortURL: req.params.id,
@@ -108,11 +109,14 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
- //console.log(req.body);
- let user_email = req.body.email;
- let user_password = req.body.password;
- console.log(user_email);
- console.log(user_password);
+ let randomId = generateRandomString();
+ //let newUser = `${user}-${randomId}`;
+ users[randomId]={
+    id: `${randomId}`,
+    email: `${req.body.email}`.toString(),
+    password: `${req.body.password}`.toString(),
+  }
+  console.log(users);
   res.render("urls_register");
 });
 
