@@ -44,12 +44,36 @@ function generateRandomString() {
   return randomId ;
 }
 
-// document.getElementsByTagName('a').onClick((event)=>{
-// console.log(event.target.innerHTML);
+//-------------- REGISTER PAGE -------------//
 
-// })
+app.post("/register", (req, res) => {
+  let randomId = generateRandomString();
+  if(req.body.email === '' || req.body.password === '' ){
+    res.status(400).send("Error: Enter a valid Email and Password")
+  }
+  console.log(`${req.body.email}`)
 
-//generateRandomString();
+  for(key in users){
+    if (users[key].email === `${req.body.email}`){
+        //console.log( working);
+        // not working
+      return res.status(400).send("Error: Email id already taken");
+    }
+  }
+      //res.cookie("user_id",`${randomId}`);
+      users[randomId]={
+        id: `${randomId}`,
+        email: `${req.body.email}`,
+        password: `${req.body.password}`,
+    }
+
+      res.cookie("user_id",`${randomId}`);
+      res.render("urls_register");
+      console.log(users);
+
+
+
+});
 
 // -------LOGIN PAGES--------------///
 
@@ -59,14 +83,28 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-console.log(req.body);
-
-
-  //res.render("login");
+  console.log(req.body);
+  for(let key in users){
+    if (users[key].email === req.body.email && users[key].password === req.body.password){
+        console.log(`${req.body.email}`);
+        console.log(`${req.body.password}`);  // not working
+        res.cookie("user_id",users[key]);
+        return res.redirect("/");
+    }
+  }
+  return res.status(403).send("Error: Please enter a registered Email or Password");
 });
 
 
 //-------------------------------------//
+// ----------- LOGOUT -----------------//
+
+app.post("/logout", (req, res) => {
+  req.session.user_id = null;
+  res.redirect('/');
+});
+
+// -------------------------------------//
 
 app.get('/', (req,res)=>{
   res.end('hello!!');
@@ -83,7 +121,7 @@ app.get("/hello", (req, res) => {
 app.get("/urls/new", (req, res) => {
   let templateVars = {
   users: users,
-  username:req.cookies.username,
+  user_id:req.cookies.user_id,
 };
   res.render("urls_new",templateVars);
   console.log(user);
@@ -126,33 +164,12 @@ app.get("/register", (req, res) => {
 });
 
 
-// page to register new users
 
-app.post("/register", (req, res) => {
-  let randomId = generateRandomString();
-  if(req.body.email == false || req.body.password == false ){
-    res.status(400).send("Error: Enter a valid Email and Password")
-  }
-  for(let user in users){
-    if (user['email'] === `${req.body.email}`){   // not working
-      res.status(400).send("Error: Email id already taken");
-    }
-  }
-
-  users[randomId]={
-    id: `${randomId}`,
-    email: `${req.body.email}`.toString(),
-    password: `${req.body.password}`.toString(),
-    }
-
-  res.cookie("user_id",`${randomId}`);
-  res.render("urls_register");
-});
 
 app.get("/urls", (req, res) => {
   let templateVars = {
     users: users,
-    username:req.cookies.username,
+    user_id:req.cookies.user_id,
   };
   res.render("urls_index", templateVars);
 });
@@ -173,12 +190,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
 
 });
 
-app.post("/logout", (req, res) => {
- res.clearCookie('username');
- //console.log(req.body);
 
- res.redirect("/urls");
-});
 
 
 
