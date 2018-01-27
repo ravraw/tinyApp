@@ -56,11 +56,13 @@ const checkUserRegistration = (email, password) => {
 };
 
 const checkUserStatus = (currentUser) => {
+
   for (let user in users) {
     if (user === currentUser) {
       return true;
     }
   } return false;
+
 };
 
 
@@ -144,38 +146,58 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  console.log(req);
-if(checkUserStatus(req.cookies.user_id)) {
-  //console.log(users);
-  let templateVars = {
-  users: users,
-  user_id:req.cookies.user_id,
-};
+  //console.log(req);
+  if(req.cookies.user_id === undefined){
+    return res.status(401).send('Error: 401: Not autorized , Please <a href="/register"> Register </a>');
+  }
+    if(checkUserStatus(req.cookies.user_id.id)) {
+      let templateVars = {
+      users: users,
+      user_id:req.cookies.user_id,
+      }
+    return res.render("urls_new",templateVars);
 
-  res.render("urls_new",templateVars);
-  //console.log(user);
-}else {
-    res.status(401).send('Error: 401: Not autorized , Please <a href="/login"> Login </a>');
+    }
 
-}
+      return res.status(401).send('Error: 401: Not autorized , Please <a href="/login"> Login </a>');
 
 });
 
 app.post("/urls", (req, res) => {
-  var shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  if (checkUserStatus(req.cookies.user_id.id)) {
+    let newID = generateRandomString();
+    urlDatabase[newID] = {
+      longURL: req.body.longURL,
+      userID: req.cookies.user_id.id
+    };
+    //res.redirect('/urls');
+  // } else {
+  //   res.status(401).send('Error: 401: You are not authorized, Please <a href="/"> Login </a>');
+  // }
+  // var shortURL = generateRandomString();
+  // urlDatabase[''] ={
+  //   shortURL:req.body.longURL,
+  //   userID:req.cookies.user_id,
+  // }
+  // console.log(req);
+  // var shortURL = generateRandomString();
+  // urlDatabase[shortURL] = {
+  //    shortURL: req.body.longURL
 
-  res.redirect(`/u/${shortURL}`);
+
+
+  res.redirect(`/u/${newID}`);
   console.log(urlDatabase);
+}
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  console.log('working');
+  console.log(req.params);
   var shortURL = req.params.shortURL;
   console.log(shortURL);
-  var longURL = urlDatabase[shortURL];
-  res.redirect(urlDatabase[shortURL]);
-  res.status(301).send({ error: 'temporary redirect"'});
+  var longURL = urlDatabase[shortURL].longURL;
+  res.redirect(longURL);
+  //res.status(301).send({ error: 'temporary redirect"'});
 });
 
 
