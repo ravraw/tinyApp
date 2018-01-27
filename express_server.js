@@ -44,6 +44,11 @@ function generateRandomString() {
   return randomId ;
 }
 
+//--------------CHECK USER REGISTRATION -----//
+
+
+
+
 //-------------- REGISTER PAGE -------------//
 
 app.post("/register", (req, res) => {
@@ -65,14 +70,13 @@ app.post("/register", (req, res) => {
         id: `${randomId}`,
         email: `${req.body.email}`,
         password: `${req.body.password}`,
+        loggedIn: false,
+
     }
 
       res.cookie("user_id",`${randomId}`);
       res.render("urls_register");
       console.log(users);
-
-
-
 });
 
 // -------LOGIN PAGES--------------///
@@ -83,11 +87,11 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+
   console.log(req.body);
   for(let key in users){
     if (users[key].email === req.body.email && users[key].password === req.body.password){
-        console.log(`${req.body.email}`);
-        console.log(`${req.body.password}`);  // not working
+        users[key].loggedin = true ;
         res.cookie("user_id",users[key]);
         return res.redirect("/");
     }
@@ -99,8 +103,10 @@ app.post("/login", (req, res) => {
 //-------------------------------------//
 // ----------- LOGOUT -----------------//
 
-app.post("/logout", (req, res) => {
+app.post("/logout",(req, res) => {
+   console.log(req);
   req.session.user_id = null;
+  console.log(req);
   res.redirect('/');
 });
 
@@ -141,7 +147,7 @@ app.get("/u/:shortURL", (req, res) => {
   console.log(shortURL);
   var longURL = urlDatabase[shortURL];
   res.redirect(urlDatabase[shortURL]);
-  res.status(301).send({ error: 'temporary redirect"' });
+  res.status(301).send({ error: 'temporary redirect"'});
 });
 
 
