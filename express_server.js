@@ -44,8 +44,24 @@ function generateRandomString() {
   return randomId ;
 }
 
-//--------------CHECK USER REGISTRATION -----//
+//--------------CHECK IF USER IS REGISTERED OR LOGGED IN -----//
+const checkUserRegistration = (email, password) => {
+  if (password === undefined) {
+    for (user in users) {
+      if (users[user].email === email){
+        return true;
+      }
+    } return false;
+  }
+};
 
+const checkUserStatus = (currentUser) => {
+  for (let user in users) {
+    if (user === currentUser) {
+      return true;
+    }
+  } return false;
+};
 
 
 
@@ -112,7 +128,10 @@ app.post("/logout",(req, res) => {
 
 // -------------------------------------//
 
+// ----------GET REQUESTS --------------//
+
 app.get('/', (req,res)=>{
+  if(checkUserStatus)
   res.end('hello!!');
 
 })
@@ -125,12 +144,21 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  console.log(req);
+if(checkUserStatus(req.cookies.user_id)) {
+  //console.log(users);
   let templateVars = {
   users: users,
   user_id:req.cookies.user_id,
 };
+
   res.render("urls_new",templateVars);
-  console.log(user);
+  //console.log(user);
+}else {
+    res.status(401).send('Error: 401: Not autorized , Please <a href="/login"> Login </a>');
+
+}
+
 });
 
 app.post("/urls", (req, res) => {
