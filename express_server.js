@@ -13,9 +13,16 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2":{
+      longURL:"http://www.lighthouselabs.ca",
+      userID:"a4a536"
+  },
+  "9sm5xK":{
+      longURL:"http://www.google.com",
+      userID:"agdth7"
+  },
 }
+
 
 const users = {
   "userRandomID": {
@@ -68,6 +75,13 @@ const checkUserStatus = (currentUser) => {
 
 
 //-------------- REGISTER PAGE -------------//
+
+
+app.get("/register", (req, res) => {
+
+  res.render("urls_register");
+});
+
 
 app.post("/register", (req, res) => {
   let randomId = generateRandomString();
@@ -130,20 +144,41 @@ app.post("/logout",(req, res) => {
 
 // -------------------------------------//
 
-// ----------GET REQUESTS --------------//
+//---------------ROOT ---------------//
 
 app.get('/', (req,res)=>{
   if(checkUserStatus)
   res.end('hello!!');
 
 })
+
+//--------------JSON -------------//
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+//------------------HELL0------------//
+
 app.get("/hello", (req, res) => {
   res.end("<html><body>Hello <b>World</b></body></html>\n");
 });
+
+
+//------------LINK TO NEW --------------//
+
+// app.get('/urls/new', (req, res) => {
+
+//     let templateVars = {
+//       users: users,
+//       urls: urlDatabase,
+//       user_id:req.cookies.user_id,
+//       }
+
+//    res.render("urls_new",templateVars);
+
+// });
+
+
 
 app.get("/urls/new", (req, res) => {
   //console.log(req);
@@ -153,6 +188,7 @@ app.get("/urls/new", (req, res) => {
     if(checkUserStatus(req.cookies.user_id.id)) {
       let templateVars = {
       users: users,
+      urls: urlDatabase,
       user_id:req.cookies.user_id,
       }
     return res.render("urls_new",templateVars);
@@ -163,33 +199,52 @@ app.get("/urls/new", (req, res) => {
 
 });
 
+
+
+
+// -------------------URLS --------------//
+
+app.get("/urls", (req, res) => {
+   let templateVars = {
+     urls: urlDatabase,
+    // users: users,
+    // urls: urlDatabase,
+    // longURL: urlDatabase.url.longURL,
+    // user_id:req.cookies.user_id,
+  };
+  console.log(urlDatabase.b2xVn2["longURL"]);
+  console.log(users.userRandomID.id);
+  res.render("urls_index",templateVars);
+});
+
 app.post("/urls", (req, res) => {
-  if (checkUserStatus(req.cookies.user_id.id)) {
-    let newID = generateRandomString();
+  if (userChecker(req.session.user_id)) {
+    let newID = generateRandomNumber();
     urlDatabase[newID] = {
       longURL: req.body.longURL,
-      userID: req.cookies.user_id.id
+      userID: req.session.user_id
     };
-    //res.redirect('/urls');
-  // } else {
-  //   res.status(401).send('Error: 401: You are not authorized, Please <a href="/"> Login </a>');
-  // }
-  // var shortURL = generateRandomString();
-  // urlDatabase[''] ={
-  //   shortURL:req.body.longURL,
-  //   userID:req.cookies.user_id,
-  // }
-  // console.log(req);
-  // var shortURL = generateRandomString();
-  // urlDatabase[shortURL] = {
-  //    shortURL: req.body.longURL
-
-
-
-  res.redirect(`/u/${newID}`);
-  console.log(urlDatabase);
-}
+    res.redirect('/urls');
+  } else {
+    res.status(401).send('Error: 401: You are not authorized, Please <a href="/"> Login </a>');
+  }
 });
+
+// app.post("/urls", (req, res) => {
+//   if (checkUserStatus(req.cookies.user_id.id)) {
+//     let newID = generateRandomString();
+//      urlDatabase[newID] = {
+//       longURL: req.body.longURL,
+//       userID: req.cookies.user_id.id
+//     };
+
+//   res.redirect(`/u/${newID}`);
+//   console.log(urlDatabase);
+// }
+// });
+
+
+//-----------------
 
 app.get("/u/:shortURL", (req, res) => {
   console.log(req.params);
@@ -200,10 +255,11 @@ app.get("/u/:shortURL", (req, res) => {
   //res.status(301).send({ error: 'temporary redirect"'});
 });
 
+// -------------------------------
 
 app.get("/urls/:id", (req, res) => {
   //console.log('/urls/:id');
-
+ console.log(req);
   let templateVars = {
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id],
@@ -214,52 +270,65 @@ app.get("/urls/:id", (req, res) => {
 
 });
 
-app.get("/register", (req, res) => {
 
-  res.render("urls_register");
+
+
+//---------------------------------
+app.post("/urls/:id/delete", (req, res) => {
+  if (userChecker(req.session.user_id)) {
+    delete urlDatabase[req.params.id];
+    res.redirect('/urls');
+  } else {
+    res.status(403).send('403: You are not allowed to delete this');
+  }
 });
 
 
-
-
-app.get("/urls", (req, res) => {
-  let templateVars = {
-    users: users,
-    user_id:req.cookies.user_id,
-  };
-  res.render("urls_index", templateVars);
-});
+//-------------------DELETE ------------------//
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-
-  var shortURL = req.params.shortURL;
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
-});
-
-
-app.post("/urls/:shortURL/update", (req, res) => {
-
-  urlDatabase[req.params.shortURL] = req.body.updatedURL;
-
-  res.redirect("/urls");
+  if(checkUserStatus(req.cookies.user_id.id)){
+    console.log(req.params);
+    var shortURL = req.params.shortURL;
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  }else {
+    res.status(403).send('403: Not authorised to delete ');
+  }
 
 });
 
+//--------------------EDIT -------------------//
+
+app.get("/urls/:shortURL/edit",(req,res)=>{
+   if(checkUserStatus(req.cookies.user_id.id)){
+    console.log(req);
+      let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    users: users,
+  };
+
+  res.render("urls_show", templateVars);
+
+}else {
+    res.status(403).send('403: Not authorised to edit ');
+  }
+});
+
+app.post("/urls/:shortURL/edit", (req, res) => {
+  if(checkUserStatus(req.cookies.user_id.id)){
+    urlDatabase[req.params.shortURL] = req.body.updatedURL;
+    res.redirect("/urls");
+  }else {
+    res.status(403).send('403: Not authorised to edit ');
+  }
 
 
+});
 
 
-
-
-
-
-
-
-
-
-
-
+//----------------------------------------------
 app.listen(PORT,()=>{
 
   console.log(`Example app listening on port ${PORT}!`);
