@@ -8,8 +8,7 @@
 
    <h1> <bold>Yes</bold> you can change your "Tiny URLs"</h1>
 
-
-    <form method="POST" action = "/urls/<%= shortURL %>/edit">
+    <form method="POST" action = "/urls/<%= shortURL %>">
       <label>ShortURL:<%= shortURL %></label><br>
       <input type = "text" name="updatedURL" placeholder = "http://">
       <input type="submit" value = "submit">

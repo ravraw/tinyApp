@@ -151,7 +151,7 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 // ----- shows the edit page if the user is owner of the short url -----//
-app.get('/urls/:shortURL/edit', (req, res) => {
+app.get('/urls/:shortURL', (req, res) => {
   if (checkUserStatus(req.session.user_id)) {
     const templateVars = {
       shortURL: req.params.shortURL,
@@ -264,7 +264,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // --------edits the short url if belongs to the current user -------//
 
-app.post('/urls/:shortURL/edit', (req, res) => {
+app.post('/urls/:shortURL', (req, res) => {
 
   if (checkUserStatus(req.session.user_id)) {
     if (req.session.user_id === urlDatabase[shortURL].userID) {
