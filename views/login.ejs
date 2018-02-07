@@ -4,13 +4,14 @@
     <title>TinyApp</title>
   </head>
   <body>
-    <% include partials/_header %>
+    <h1>Hi Welcome Back !!! Please login </h1>
     <form method="POST" action = "/login" method = "post" >
       <label>Log into TinyApp</label><br>
       <input type="email" name = "email" ><br>
       <input type = "password" name = 'password'><br>
       <input type = "submit" value ="Log in">
     </form>
+    <form method = "POST" action = "/logout"> <button>Logout</button></form>
 
   </body>
 </html>
